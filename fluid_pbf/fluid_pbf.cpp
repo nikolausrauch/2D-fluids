@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     viewer.onGui([&](Window& window, double dt)
     {
         ImGui::SetNextWindowPos(ImVec2{16, 16});
-        ImGui::SetNextWindowSize(ImVec2{window.size().x / 3.0f, window.size().y - 32.0f});
+        ImGui::SetNextWindowSize(ImVec2{window.size().x / 3.0f, window.size().y - 160.0f * (viewer.mWindow.mHDPI ? 1.5f : 1.0f)});
         ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_NoSavedSettings);
         {
             ImGui::TextColored(ImVec4(0.9, 0.6, 0.6, 1.0), "FPS: %4.2f", viewer.fps());
@@ -121,6 +121,18 @@ int main(int argc, char** argv)
                 sim.updateKernels();
                 sim.autotuneRestDensity();
             }
+        }
+        ImGui::End();
+
+
+        ImGui::SetNextWindowPos( ImVec2(16, window.size().y - 112 * (viewer.mWindow.mHDPI ? 1.5f : 1.0f)) );
+        ImGui::SetNextWindowSize(ImVec2{window.size().x / 3.0f, -1});
+        ImGui::Begin("##controls", nullptr, ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoTitleBar );
+        {
+            ImGui::TextColored({1.0, 1.0, 0.0, 1.0},   "[w/s keys]   ");    ImGui::SameLine(); ImGui::TextColored({1.0, 1.0, 1.0, 0.9}, " control zoom level");
+            ImGui::TextColored({1.0, 1.0, 0.0, 1.0},   "[f key]      ");    ImGui::SameLine(); ImGui::TextColored({1.0, 1.0, 1.0, 0.9}, " toggle fullscreen");
+            ImGui::TextColored({1.0, 1.0, 0.0, 1.0},   "[r key]      ");    ImGui::SameLine(); ImGui::TextColored({1.0, 1.0, 1.0, 0.9}, " reload scene");
+            ImGui::TextColored({1.0, 1.0, 0.0, 1.0},   "[space key]  ");    ImGui::SameLine(); ImGui::TextColored({1.0, 1.0, 1.0, 0.9}, " spawn water");
         }
         ImGui::End();
     });
