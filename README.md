@@ -18,7 +18,7 @@ The goal is to provide minimalistic and straightforward implementations, emphasi
   - [x] Hashgrid nearest neighbor search
 
 
-![](https://github.com/nikolausrauch/2D-fluid/assets/13553309/d086ca68-42b6-406c-b79c-da02d6f86271)
+![](https://github.com/nikolausrauch/2D-fluids/assets/13553309/07f62134-527b-4739-9c0e-bf37a33c0fd7)
 
 ## Examples
 
