@@ -83,6 +83,11 @@ endif()
 add_subdirectory(viewer)
 
 #########################################
+#             Build Utility             #
+#########################################
+add_subdirectory(utility)
+
+#########################################
 #    Smooth-Particle-Hydrodynamics      #
 #########################################
 # add_subdirectory(fluid_sph)

@@ -11,7 +11,7 @@ set(HDR
     )
 
 add_executable( fluid_pbf ${SRC} ${HDR} )
-target_link_libraries( fluid_pbf PRIVATE viewer_static )
+target_link_libraries( fluid_pbf PRIVATE viewer_static utility )
 
 target_compile_features( fluid_pbf PUBLIC cxx_std_17 )
 set_target_properties( fluid_pbf PROPERTIES CXX_EXTENSIONS OFF )

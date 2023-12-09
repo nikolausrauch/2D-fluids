@@ -1,5 +1,7 @@
 #include "pbfsystem.h"
 
+#include <utility/perfmonitor.h>
+
 #include <cmath>
 #include <ctime>
 #include <cassert>
@@ -90,62 +92,93 @@ void PBFSystem::update()
 
 void PBFSystem::update(float dt)
 {
-    const glm::vec2 gravity{0.0, -9.81};
-
-    /* 1-4: predict particle positions */
-    #pragma omp parallel for schedule(static)
-    for(auto& p : particles)
+    PerfMonitor::instance().start_frame();
     {
-        p.velocity += dt * (gravity - p.damping * p.velocity);
-        p.position[1] = p.position[0] + dt * p.velocity;
-    }
+        profile_sample(total);
 
-    /* 5-6: find particle neighbours */
-    nnSearch.clear();
-    nnSearch.fillGrid(particles, kernelRadius);
-    nnSearch.fillNeighbors(particles, kernelRadius);
+        const glm::vec2 gravity{0.0, -9.81};
 
-
-    for(int i = 0; i < solverIteration; i++)
-    {
-        float stiffness = 1.0f - std::pow(1.0f - 0.95f, 1.0 / static_cast<float>(i+1));
-
-        /* 9 - 11 calculated lambda */
-        #pragma omp parallel for schedule(static)
-        for(auto& p : particles)
+        /* 1-4: predict particle positions */
         {
-            compute_lambda(p);
+            profile_sample(predict);
+
+            #pragma omp parallel for schedule(static)
+            for(auto& p : particles)
+            {
+                p.velocity += dt * (gravity - p.damping * p.velocity);
+                p.position[1] = p.position[0] + dt * p.velocity;
+            }
         }
 
-
-        /* 12 - 15 compute delta position, collision and response */
-        #pragma omp parallel for schedule(static)
-        for(auto& p : particles)
+        /* 5-6: find particle neighbours */
         {
-            compute_deltaPos(p, stiffness);
+            profile_sample(nnsearch);
+
+            nnSearch.clear();
+            nnSearch.fillGrid(particles, kernelRadius);
+            nnSearch.fillNeighbors(particles, kernelRadius);
         }
 
-        /* 16 - 18 update predicted position */
-        #pragma omp parallel for schedule(static)
-        for(auto& p : particles)
         {
-            p.position[1] += p.deltaPosition;
+            profile_sample(iterations);
+
+            for(int i = 0; i < solverIteration; i++)
+            {
+                float stiffness = 1.0f - std::pow(1.0f - 0.95f, 1.0 / static_cast<float>(i+1));
+
+                /* 9 - 11 calculated lambda */
+                {
+                    profile_sample(lambda);
+
+                    #pragma omp parallel for schedule(static)
+                    for(auto& p : particles)
+                    {
+                        compute_lambda(p);
+                    }
+                }
+
+                /* 12 - 15 compute delta position, collision and response */
+                {
+                    profile_sample(deltapos);
+
+                    #pragma omp parallel for schedule(static)
+                    for(auto& p : particles)
+                    {
+                        compute_deltaPos(p, stiffness);
+                    }
+
+                    #pragma omp parallel for schedule(static)
+                    for(auto& p : particles)
+                    {
+                        p.position[1] += p.deltaPosition;
+                    }
+                }
+            }
+
         }
-    }
 
-    #pragma omp parallel for schedule(static)
-    for(auto& p : particles)
-    {
-        p.velocity = (p.position[1] - p.position[0]) / dt;
-        p.position[0] = p.position[1];
-    }
+        {
+            profile_sample(updatepredic);
 
-    #pragma omp parallel for schedule(static)
-    for(auto& p : particles)
-    {
-        compute_viscocity(p);
-    }
+            #pragma omp parallel for schedule(static)
+            for(auto& p : particles)
+            {
+                p.velocity = (p.position[1] - p.position[0]) / dt;
+                p.position[0] = p.position[1];
+            }
+        }
 
+        {
+            profile_sample(viscocity);
+
+            #pragma omp parallel for schedule(static)
+            for(auto& p : particles)
+            {
+                compute_viscocity(p);
+            }
+        }
+
+    }
 }
 
 void PBFSystem::boundary_constraints(Particle& p, float stiffness)
@@ -341,7 +374,7 @@ void NearestNeighbor::fillGrid(std::vector<Particle> &particles, float radius)
 
 void NearestNeighbor::fillNeighbors(std::vector<Particle> &particles, float radius)
 {
-    #pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
     for(unsigned int i = 0; i < particles.size(); i++)
     {
         updateNeighbour(i, particles, radius);
@@ -391,7 +424,7 @@ const std::vector<unsigned int> &NearestNeighbor::neighbors(const Particle &p, c
 
 void NearestNeighbor::clear()
 {
-    #pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
     for(auto& cell : mHashgrid)
     {
         cell.clear();

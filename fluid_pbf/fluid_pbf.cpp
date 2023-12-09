@@ -1,4 +1,5 @@
 #include <viewer.h>
+#include <utility/perfmonitor.h>
 #include <cstdlib>
 
 #include <imgui/imgui.h>
@@ -54,8 +55,18 @@ int main(int argc, char** argv)
         ImGui::Begin("Settings", nullptr, ImGuiWindowFlags_NoSavedSettings);
         {
             ImGui::TextColored(ImVec4(0.9, 0.6, 0.6, 1.0), "FPS: %4.2f", viewer.fps());
-
             ImGui::TextColored(ImVec4(0.9, 0.6, 0.6, 1.0), "Num. Particles: %llu", sim.particles.size());
+            {
+                auto& perf_monitor = PerfMonitor::instance();
+                ImGui::TextColored(ImVec4(1.0, 0.4, 0.4, 1.0), "Total : %4.3f ms", perf_monitor.time("total"));
+                ImGui::TextColored(ImVec4(0.1, 0.8, 0.0, 1.0), "\tpredict: %4.3f ms",  perf_monitor.time("predict"));
+                ImGui::TextColored(ImVec4(1.0, 0.5, 0.0, 1.0), "\tnnsearch: %4.3f ms", perf_monitor.time("nnsearch"));
+                ImGui::TextColored(ImVec4(0.5, 0.5, 1.0, 1.0), "\tsolver: %4.3f ms", perf_monitor.time("iterations"));
+                ImGui::TextColored(ImVec4(0.5, 0.5, 1.0, 1.0), "\t\tlambda: %4.3f ms", perf_monitor.time("lambda"));
+                ImGui::TextColored(ImVec4(0.5, 0.5, 1.0, 1.0), "\t\tdeltapos: %4.3f ms", perf_monitor.time("deltapos"));
+                ImGui::TextColored(ImVec4(0.8, 0.4, 1.0, 1.0), "\tupdate: %4.3f ms", perf_monitor.time("updatepredic"));
+                ImGui::TextColored(ImVec4(1.0, 0.5, 0.8, 1.0), "\tviscocity: %4.3f ms", perf_monitor.time("updatepredic"));
+            }
 
             ImGui::Separator();
 
