@@ -6,7 +6,7 @@
 #---------------------------------------#
 #########################################
 cmake_minimum_required( VERSION 3.9 )
-project( 2D-Viewer )
+project( 2D-Fluids )
 
 message("\n * 2D Fluid Simulations ")
 
@@ -63,14 +63,41 @@ add_subdirectory(external/stb_image)
 set_property(TARGET stb_image APPEND_STRING PROPERTY COMPILE_FLAGS " -w")
 
 
+
+#################################
+#            OpenMP             #
+#################################
+option(COMPILE_WITH_OPENMP "enable openmp parallelization" ON)
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND AND COMPILE_WITH_OPENMP)
+    message(STATUS "Build with OpenMP version ${OpenMP_CXX_VERSION}")
+else()
+    message(STATUS "Build without OpenMP")
+endif()
+
+
 #########################################
 #              Build Viewer             #
 #########################################
 add_subdirectory(viewer)
 
+#########################################
+#    Smooth-Particle-Hydrodynamics      #
+#########################################
+# add_subdirectory(fluid_sph)
 
 #########################################
-#      Build Fluid Dynamic Solvers      #
+#         Position-based Fluids        #
 #########################################
-# add_subdirectory(fluid)
+add_subdirectory(fluid_pbf)
 
+#########################################
+#         Fluid-Particle in Cell        #
+#########################################
+# add_subdirectory(fluid_flip)
+
+#########################################
+#             Eulerian Fluid            #
+#########################################
+# add_subdirectory(fluid_eulerian)
