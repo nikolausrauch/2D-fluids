@@ -7,7 +7,7 @@ The goal is to provide minimalistic and straightforward implementations, emphasi
 ## Features
 
 - Methods
-  - [ ] WCSPH: Weakly Compressible SPH
+  - [x] WCSPH: Weakly Compressible SPH
   - [ ] PCISPH: Predictive-Corrective Incompressible SPH
   - [x] PBF: Position based fluid
   - [ ] FLIP: Fluid Particle in Cell
@@ -21,6 +21,9 @@ The goal is to provide minimalistic and straightforward implementations, emphasi
 ![](https://github.com/nikolausrauch/2D-fluids/assets/13553309/07f62134-527b-4739-9c0e-bf37a33c0fd7)
 
 ## Examples
+
+### Weakly Compressible SPH
+[](https://github.com/nikolausrauch/2D-fluids/assets/13553309/049fe374-c74d-4f43-a7ef-ee37c0057b6f)
 
 ### Position based Fluid
 [](https://github.com/nikolausrauch/2D-fluid/assets/13553309/6eebf922-983f-478a-ba2a-74a55d1feeef)
