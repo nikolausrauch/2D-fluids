@@ -25,7 +25,7 @@ The goal is to provide minimalistic and straightforward implementations, emphasi
 ## Example Videos
 
 ### Weakly Compressible SPH
-[](https://github.com/nikolausrauch/2D-fluids/assets/13553309/049fe374-c74d-4f43-a7ef-ee37c0057b6f)
+[](https://github.com/nikolausrauch/2D-fluids/assets/13553309/533bd19f-d3a7-4e23-9f94-42e902ad0c69)
 
 ### Position based Fluid
 [](https://github.com/nikolausrauch/2D-fluid/assets/13553309/6eebf922-983f-478a-ba2a-74a55d1feeef)
