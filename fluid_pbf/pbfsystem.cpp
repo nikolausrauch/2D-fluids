@@ -29,8 +29,8 @@ Wall::Wall(const glm::vec2& pos, const glm::vec2& normal)
 
 PBFSystem::PBFSystem()
     : timeStep(0.0083),
-      solverIteration(2),
-      damping(0.0), radius(0.075), kernelRadius(2.5f*radius),
+      solverIteration(4),
+      damping(0.0), radius(0.05), kernelRadius(2.5f*radius),
       restDensity(1.0),
       relaxEps(600.0), xsphConstant(0.001),
       surfacePressure(true), kernelSubstep(0.25f), surfaceK(0.0001), surfaceExp(4),
