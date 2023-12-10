@@ -37,9 +37,9 @@ float Boundary::penetration(const glm::vec2 &pos)
 
 
 WCSPH::WCSPH()
-    : timeStep(0.002), numPerFrame(5),
+    : timeStep(0.0016), numPerFrame(5),
       mass(0.006), radiusParticle(0.05), radiusKernel(2.5f*radiusParticle),
-      restDensity(1.0), eosScale(100), eosExponent(7.0), viscocityConstant(0.1f),
+      restDensity(1.0), eosScale(100), eosExponent(7.0), viscocityConstant(0.15f),
       gravity(0, -9.81),
       densityKernel(radiusKernel), pressureKernel(radiusKernel), viscosityKernel(radiusKernel),
       nnSearch(PARTICLE_INIT), nnSearchBoundary(PARTICLE_INIT)
