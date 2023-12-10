@@ -88,9 +88,9 @@ add_subdirectory(viewer)
 add_subdirectory(utility)
 
 #########################################
-#    Smooth-Particle-Hydrodynamics      #
+#        Weakly Compressible SPH        #
 #########################################
-# add_subdirectory(fluid_sph)
+add_subdirectory(fluid_wcsph)
 
 #########################################
 #         Position-based Fluids        #
