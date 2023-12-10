@@ -18,6 +18,12 @@ Particle::Particle(const glm::vec2 &pos)
 
 }
 
+GhostParticle::GhostParticle(const glm::vec2& pos)
+    : position(pos)
+{
+
+}
+
 Boundary::Boundary(const glm::vec2 &pos, const glm::vec2 &norm, const glm::vec2& min, const glm::vec2& max)
     : position(pos), normal(norm), min(min), max(max)
 {
@@ -56,7 +62,7 @@ Particle &WCSPH::createParticle(const glm::vec2 &pos)
     return particles.back();
 }
 
-Particle& WCSPH::createBoundaryParticle(const glm::vec2& pos)
+GhostParticle& WCSPH::createGhostParticle(const glm::vec2& pos)
 {
     assert(particles.size() < PARTICLE_INIT);
 
@@ -95,8 +101,7 @@ void WCSPH::boundary(const glm::vec2 &pos, const glm::vec2 &normal, const glm::v
     auto samples = helper::randomPositions(radiusParticle / 2.0f, min, max);
     for(const auto& p : samples)
     {
-        auto& particle = createBoundaryParticle(p);
-        particle.density = restDensity;
+        createGhostParticle(p);
     }
 
     nnSearchBoundary.fillGrid(particlesBoundary, radiusKernel);
@@ -137,8 +142,8 @@ void WCSPH::update(float dt)
         #pragma omp parallel for schedule(static)
         for(auto& p : particles)
         {
-            nnSearch.updateNeighbour(p, particles, radiusKernel);
-            nnSearchBoundary.updateNeighbour(std::distance(particles.data(), &p), p.position, particlesBoundary, radiusKernel);
+            nnSearch.updateNeighbour(std::distance(particles.data(), &p), particles, radiusKernel);
+            nnSearchBoundary.updateGhostNeighbour(std::distance(particles.data(), &p), p.position, particlesBoundary, radiusKernel);
 
             p.density = 0.0f;
 
@@ -154,7 +159,7 @@ void WCSPH::update(float dt)
 
             /* boundary particles */
             {
-                const auto& neighbours = nnSearchBoundary.neighbors(p, particles);
+                const auto& neighbours = nnSearchBoundary.neighbors(std::distance(particles.data(), &p));
                 std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                 {
                     const auto d = glm::length(p.position - particlesBoundary[j].position);
@@ -195,11 +200,11 @@ void WCSPH::update(float dt)
 
             /* boundary particles */
             {
-                const auto& neighbours = nnSearchBoundary.neighbors(p_i, particles);
+                const auto& neighbours = nnSearchBoundary.neighbors(std::distance(particles.data(), &p_i));
                 std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                 {
                     const auto& p_j = particlesBoundary[j];
-                    p_i.force -= mass * mass * (p_i.pressure / (p_i.density*p_i.density) + p_i.pressure / (p_j.density*p_j.density))
+                    p_i.force -= mass * mass * (p_i.pressure / (p_i.density*p_i.density) + p_i.pressure / (restDensity*restDensity))
                             * pressureKernel.gradient(p_i.position, p_j.position);
                 });
             }
@@ -280,117 +285,6 @@ void WCSPH::autotuneMass()
     std::cout << "Particle in range: " << count << std::endl;
     std::cout << "Density Estimate: " << densityEstimate * mass << std::endl;
     std::cout << "Autotune Mass: " << mass << std::endl;
-}
-
-NearestNeighbor::NearestNeighbor(unsigned int maxParticles, unsigned int sizeGrid, unsigned int maxNeighbor)
-{
-    mHashgrid.resize( sizeGrid );
-    std::for_each(mHashgrid.begin(), mHashgrid.end(), [&](auto& n){ n.reserve( maxNeighbor ); });
-
-    mNeighbors.resize(maxParticles);
-    std::for_each(mNeighbors.begin(), mNeighbors.end(), [&](auto& n){ n.reserve( maxNeighbor ); });
-}
-
-void NearestNeighbor::fillGrid(std::vector<Particle> &particles, float radius)
-{
-    for(unsigned int i = 0; i < particles.size(); i++)
-    {
-        const auto& p = particles[i];
-        glm::ivec2 bucket = glm::floor(p.position / (1.0f*radius));
-
-        unsigned int hash = ( (73856093 * bucket.x) ^ (19349663 * bucket.y) );
-        mHashgrid[ hash % mHashgrid.size() ].emplace_back(i);
-    }
-}
-
-void NearestNeighbor::fillNeighbors(std::vector<Particle> &particles, float radius)
-{
-#pragma omp parallel for schedule(static)
-    for(unsigned int i = 0; i < particles.size(); i++)
-    {
-        updateNeighbour(i, particles, radius);
-    }
-}
-
-void NearestNeighbor::updateNeighbour(unsigned int i, std::vector<Particle> &particles, float radius)
-{
-    const auto& p = particles[i];
-    glm::ivec2 bucket = glm::floor(p.position / (1.0f*radius));
-
-    mNeighbors[i].clear();
-    for(int x = -1; x <= 1; x++)
-    {
-        for(int y = -1; y <= 1; y++)
-        {
-            glm::ivec2 search(bucket.x + x,bucket.y + y);
-            unsigned int hash = ( (73856093 * search.x) ^ (19349663 * search.y) );
-            for(unsigned int j : mHashgrid[ hash % mHashgrid.size() ])
-            {
-                if(i == j) continue;
-
-                const auto& pj = particles[j];
-                if(glm::length(p.position - pj.position) < radius)
-                {
-                    mNeighbors[i].emplace_back(j);
-                }
-            }
-        }
-    }
-}
-
-void NearestNeighbor::updateNeighbour(Particle &p, std::vector<Particle> &particles, float radius)
-{
-    updateNeighbour(std::distance(particles.data(), &p), particles, radius);
-}
-
-void NearestNeighbor::updateNeighbour(unsigned int i, const glm::vec2& pos, std::vector<Particle>& particles, float radius, bool index_ignore)
-{
-    glm::ivec2 bucket = glm::floor(pos / (1.0f*radius));
-
-    mNeighbors[i].clear();
-    for(int x = -1; x <= 1; x++)
-    {
-        for(int y = -1; y <= 1; y++)
-        {
-            glm::ivec2 search(bucket.x + x,bucket.y + y);
-            unsigned int hash = ( (73856093 * search.x) ^ (19349663 * search.y) );
-            for(unsigned int j : mHashgrid[ hash % mHashgrid.size() ])
-            {
-                if(!index_ignore && i == j) continue;
-
-                const auto& pj = particles[j];
-                if(glm::length(pos - pj.position) < radius)
-                {
-                    mNeighbors[i].emplace_back(j);
-                }
-            }
-        }
-    }
-}
-
-const std::vector<unsigned int> &NearestNeighbor::neighbors(unsigned int p_index)
-{
-    return mNeighbors[p_index];
-}
-
-const std::vector<unsigned int> &NearestNeighbor::neighbors(const Particle &p, const std::vector<Particle> &particles)
-{
-    return neighbors(std::distance(particles.data(), &p));
-}
-
-void NearestNeighbor::clear()
-{
-    std::for_each(mHashgrid.begin(), mHashgrid.end(), [&](auto& n){ n.clear(); });
-}
-
-unsigned int NearestNeighbor::size() const
-{
-    return mNeighbors.size();
-}
-
-void NearestNeighbor::resize(unsigned int size)
-{
-    mNeighbors.resize(size);
 }
 
 std::vector<glm::vec2> helper::randomPositions(float spacing, const glm::vec2 &min, const glm::vec2 &max, float jitterNoise)

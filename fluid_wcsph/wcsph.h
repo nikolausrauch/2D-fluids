@@ -8,11 +8,13 @@
 
 #pragma once
 
+#include "kernel.h"
+
+#include <utility/hashgrid.h>
+
 #include <vector>
 
 #include <glm/glm.hpp>
-
-#include "kernel.h"
 
 struct Particle
 {
@@ -25,6 +27,17 @@ struct Particle
     float density;
     float pressure;
 };
+
+struct GhostParticle
+{
+    GhostParticle(const glm::vec2& pos = glm::vec2());
+    glm::vec2 position;
+};
+
+/* member access for hashgrid */
+inline const glm::vec2& position(const Particle& p) { return p.position; }
+inline const glm::vec2& position(const GhostParticle& p) { return p.position; }
+
 
 struct Boundary
 {
@@ -40,30 +53,6 @@ struct Boundary
     glm::vec2 max;
 };
 
-class NearestNeighbor
-{
-public:
-    NearestNeighbor(unsigned int maxParticles, unsigned int sizeGrid = 512*512, unsigned int maxNeighbor = 16);
-
-    void fillGrid(std::vector<Particle>& particles, float radius);
-    void fillNeighbors(std::vector<Particle>& particles, float radius);
-    void updateNeighbour(unsigned int i, std::vector<Particle> &particles, float radius);
-    void updateNeighbour(Particle& p, std::vector<Particle> &particles, float radius);
-    void updateNeighbour(unsigned int i, const glm::vec2& pos, std::vector<Particle> &particles, float radius, bool index_ignore = true);
-
-    const std::vector<unsigned int>& neighbors(unsigned int p_index);
-    const std::vector<unsigned int>& neighbors(const Particle& p, const std::vector<Particle> &particles);
-
-    void clear();
-
-    unsigned int size() const;
-    void resize(unsigned int size);
-
-protected:
-    std::vector< std::vector<unsigned int> > mNeighbors;
-    std::vector< std::vector<unsigned int> > mHashgrid;
-};
-
 struct WCSPH
 {
     WCSPH();
@@ -72,7 +61,7 @@ struct WCSPH
     WCSPH& operator = (const WCSPH&) = delete;
 
     Particle& createParticle(const glm::vec2& pos = glm::vec2());
-    Particle& createBoundaryParticle(const glm::vec2& pos = glm::vec2());
+    GhostParticle& createGhostParticle(const glm::vec2& pos = glm::vec2());
     Particle& particle(unsigned int index);
     const Particle& particle(unsigned int index) const;
     unsigned int index(const Particle& p) const;
@@ -126,11 +115,11 @@ public:
 
     std::vector<Particle> particles;
 
-    std::vector<Particle> particlesBoundary;
+    std::vector<GhostParticle> particlesBoundary;
     std::vector<Boundary> boundaries;
 
-    NearestNeighbor nnSearch;
-    NearestNeighbor nnSearchBoundary;
+    HashGrid<Particle, position> nnSearch;
+    HashGrid<GhostParticle, position> nnSearchBoundary;
 };
 
 namespace helper

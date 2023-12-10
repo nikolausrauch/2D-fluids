@@ -11,6 +11,8 @@
 
 #include "kernel.h"
 
+#include <utility/hashgrid.h>
+
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -31,37 +33,15 @@ struct Particle
     glm::vec2 deltaPosition;
 };
 
+/* member access for hashgrid */
+inline const glm::vec2& position(const Particle& p) { return p.position[1]; }
+
 struct Wall
 {
     Wall(const glm::vec2& pos, const glm::vec2& normal);
 
     glm::vec2 position;
     glm::vec2 normal;
-};
-
-
-class NearestNeighbor
-{
-public:
-    NearestNeighbor(unsigned int maxParticles, unsigned int sizeGrid = 512*512, unsigned int maxNeighbor = 16);
-
-    void fillGrid(std::vector<Particle>& particles, float radius);
-    void fillNeighbors(std::vector<Particle>& particles, float radius);
-    void updateNeighbour(unsigned int i, std::vector<Particle> &particles, float radius);
-    void updateNeighbour(Particle& p, std::vector<Particle> &particles, float radius);
-
-    const std::vector<unsigned int>& neighbors(unsigned int p_index);
-    const std::vector<unsigned int>& neighbors(const Particle& p, const std::vector<Particle> &particles);
-
-    void clear();
-    void clear(unsigned int p_index);
-
-    unsigned int size() const;
-    void resize(unsigned int size);
-
-protected:
-    std::vector< std::vector<unsigned int> > mNeighbors;
-    std::vector< std::vector<unsigned int> > mHashgrid;
 };
 
 struct PBFSystem
@@ -130,7 +110,7 @@ public:
     std::vector<Particle> particles;
     std::vector<Wall> walls;
 
-    NearestNeighbor nnSearch;
+    HashGrid<Particle, position> nnSearch;
 };
 
 namespace helper
