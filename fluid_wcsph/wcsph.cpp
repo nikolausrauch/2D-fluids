@@ -246,7 +246,7 @@ void WCSPH::particleRadius(float r)
 
 float WCSPH::pressure(float density)
 {
-    float p = eosScale * std::pow(density / restDensity - 1.0f, eosExponent);
+    float p = restDensity * eosScale / eosExponent * (std::pow(density / restDensity, eosExponent) - 1.0f);
     return (p < 0.0f) ? 0.0f : p;
 }
 
