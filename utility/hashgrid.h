@@ -7,7 +7,7 @@
 template<typename T, const glm::vec2&(*Pos)(const T&)>
 struct HashGrid
 {
-    HashGrid(unsigned int max_entries, unsigned int size = 512*512, unsigned int max_neighbors = 16)
+    HashGrid(unsigned int max_entries, unsigned int size = 512*512, unsigned int max_neighbors = 32)
     {
         mHashgrid.resize( size );
         std::for_each(mHashgrid.begin(), mHashgrid.end(), [&](auto& n){ n.reserve( max_neighbors ); });
