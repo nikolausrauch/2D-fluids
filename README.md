@@ -11,14 +11,17 @@ The goal is to provide minimalistic and straightforward implementations, emphasi
 
 - Methods
   - [x] WCSPH: Weakly Compressible SPH
-  - [ ] PCISPH: Predictive-Corrective Incompressible SPH
+  - [x] PCISPH: Predictive-Corrective Incompressible SPH
   - [x] PBF: Position Based Fluid
+  - [ ] IISPH: Implicit Incompressible SPH
+  - [ ] DFSPH: Divergence-Free SPH
   - [ ] FLIP: Fluid Particle in Cell
   - [ ] Stable-Fluid: Eulerian based Fluid
 - Utility
   - [x] 2D-Viewer with OpenGL2 and ImGui/ImPlot ([standalone repo](https://github.com/nikolausrauch/2D-viewer))
   - [x] Minimal Performance Monitoring
   - [x] Hashgrid Nearest Neighbor Search
+  - [ ] Uniform Grid Nearest Neighbor Search
 
 ![](https://github.com/nikolausrauch/2D-fluids/assets/13553309/07f62134-527b-4739-9c0e-bf37a33c0fd7)
 
