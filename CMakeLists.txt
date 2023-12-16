@@ -92,6 +92,11 @@ add_subdirectory(utility)
 #########################################
 add_subdirectory(fluid_wcsph)
 
+#############################################
+#  Predictive-Corrective Incompressible SPH #
+#############################################
+add_subdirectory(fluid_pcisph)
+
 #########################################
 #         Position-based Fluids        #
 #########################################
