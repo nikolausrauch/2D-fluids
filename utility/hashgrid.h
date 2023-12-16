@@ -32,7 +32,7 @@ struct HashGrid
             const auto& p = data[i];
             glm::ivec2 bucket = glm::floor(Pos(p) / radius);
 
-            unsigned int hash = ( (73856093 * bucket.x) ^ (19349663 * bucket.y) );
+            unsigned int hash = 73856093u * (bucket.x + 73856093u) ^ (19349663u * (bucket.y + 19349663u));
             mHashgrid[ hash % mHashgrid.size() ].emplace_back(i);
         }
     }
@@ -52,8 +52,8 @@ struct HashGrid
         {
             for(int y = -1; y <= 1; y++)
             {
-                glm::ivec2 search(bucket.x + x,bucket.y + y);
-                unsigned int hash = ( (73856093 * search.x) ^ (19349663 * search.y) );
+                glm::ivec2 search(bucket.x + x, bucket.y + y);
+                unsigned int hash = 73856093u * (search.x + 73856093u) ^ (19349663u * (search.y + 19349663u));
                 for(unsigned int j : mHashgrid[ hash % mHashgrid.size() ])
                 {
                     if(i == j) continue;
@@ -78,7 +78,7 @@ struct HashGrid
             for(int y = -1; y <= 1; y++)
             {
                 glm::ivec2 search(bucket.x + x,bucket.y + y);
-                unsigned int hash = ( (73856093 * search.x) ^ (19349663 * search.y) );
+                unsigned int hash = 73856093u * (search.x + 73856093u) ^ (19349663u * (search.y + 19349663u));
                 for(unsigned int j : mHashgrid[ hash % mHashgrid.size() ])
                 {
                     const auto& pj = particles[j];
