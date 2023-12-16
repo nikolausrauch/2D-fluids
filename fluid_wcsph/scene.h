@@ -29,7 +29,7 @@ void setup_scene(WCSPH& sim, eScene scene)
 
     if(scene == eScene::DAMM_BREAK)
     {
-        auto sampledPositions = helper::randomPositions(sim.particleRadius(), {-4.8, -3.2}, {0.0, 2.0});
+        auto sampledPositions = helper::randomPositions(sim.particleRadius()*2.0f, {-4.8, -3.2}, {0.0, 2.0});
         for(const auto& pos : sampledPositions)
         {
             sim.createParticle(pos);
@@ -38,7 +38,7 @@ void setup_scene(WCSPH& sim, eScene scene)
     else if(scene == eScene::DAMM_COLL)
     {
         {
-            auto sampledPositions = helper::randomPositions(sim.particleRadius(), {-4.8, -3.2}, {-2.0, 2.0});
+            auto sampledPositions = helper::randomPositions(sim.particleRadius()*2.0f, {-4.8, -3.2}, {-2.0, 2.0});
             for(const auto& pos : sampledPositions)
             {
                 sim.createParticle(pos);
@@ -46,7 +46,7 @@ void setup_scene(WCSPH& sim, eScene scene)
         }
 
         {
-            auto sampledPositions = helper::randomPositions(sim.particleRadius(), {2.0, -3.2}, {4.8, 2.0});
+            auto sampledPositions = helper::randomPositions(sim.particleRadius()*2.0f, {2.0, -3.2}, {4.8, 2.0});
             for(const auto& pos : sampledPositions)
             {
                 sim.createParticle(pos);

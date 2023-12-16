@@ -5,6 +5,9 @@
 #include "wcsph.h"
 #include "scene.h"
 
+//DEBUG
+#include <iterator>
+
 enum class eVisualize
 {
     DEFAULT,
@@ -41,7 +44,7 @@ int main(int argc, char** argv)
     viewer.onDraw([&](Window& window, double dt)
     {
         /* render points */
-        viewer.mRender.pointRadius = 40 * sim.particleRadius();
+        viewer.mRender.pointRadius = 50 * sim.particleRadius();
         viewer.drawPoints(sim.particles.begin(), sim.particles.end(), [&](const auto& p, glm::vec2& coord, glm::vec4& color)
         {
             coord = p.position;
@@ -127,7 +130,7 @@ int main(int argc, char** argv)
                 }
 
                 ImGui::SliderFloat("rho_0", &sim.restDensity, 0.01, 100.0);
-                ImGui::SliderFloat("eos_scale", &sim.eosScale, 0.01, 300);
+                ImGui::SliderFloat("eos_scale", &sim.eosScale, 0.01, 1000);
                 ImGui::SliderFloat("eos_exp", &sim.eosExponent, 0.01, 10);
                 ImGui::SliderFloat("viscocity", &sim.viscocityConstant, 0.0001, 1.0);
             }
@@ -172,7 +175,7 @@ int main(int argc, char** argv)
             ImGui::SameLine();
             if(ImGui::Button("autotune"))
             {
-                sim.kernelRadius(2.5f*sim.particleRadius());
+                sim.kernelRadius(4.0f*sim.particleRadius());
             }
 
         }
@@ -213,7 +216,7 @@ int main(int argc, char** argv)
         /* spawn particles */
         if(key == GLFW_KEY_SPACE && press)
         {
-            auto sampledPositions = helper::randomPositions(sim.particleRadius(), {-0.5, 0.0}, {0.5, 1.0});
+            auto sampledPositions = helper::randomPositions(sim.particleRadius()*2.0f, {-0.5, 0.0}, {0.5, 1.0});
             for(const auto& pos : sampledPositions)
             {
                 sim.createParticle(pos);

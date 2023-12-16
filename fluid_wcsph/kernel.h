@@ -13,7 +13,7 @@ struct std
 
     float operator() (float d, float d_2) const
     {
-        if(d_2 >= h_2) return 0.0f;
+        if(d >= h) return 0.0f;
 
         float x = 1.0f - d_2 / h_2;
         return 4.0f / (glm::pi<float>() * h_2) * x * x * x;
@@ -29,7 +29,7 @@ struct std
 
     float secondDerivative(float d, float d_2) const
     {
-        if(d_2 >= h_2) return 0.0f;
+        if(d >= h) return 0.0f;
 
         float x = d_2 / h_2;
         return 24.0f / (glm::pi<float>() * h_4) * (1.0 - x) * (5 * x - 1);
@@ -37,16 +37,16 @@ struct std
 
     float secondDerivative(const glm::vec2& x_i, const glm::vec2& x_j) const
     {
-        float d = glm::length(x_i - x_j + glm::vec2{1e-9f, 1e-9f});
+        float d = glm::length(x_i - x_j);
         return secondDerivative(d, d*d);
     }
 
     glm::vec2 gradient(const glm::vec2& x_i, const glm::vec2& x_j) const
     {
-        auto dir = x_j - x_i + glm::vec2{1e-9f, 1e-9f};
+        auto dir = x_j - x_i;
         auto d = glm::length(dir);
 
-        return - firstDerivative(d, d*d) * (dir / d);
+        return (d != 0.0f) ? - firstDerivative(d, d*d) * (dir / d) : glm::vec2{0.0f, 0.0f};
     }
 
 private:
@@ -86,10 +86,10 @@ struct spiky
 
     glm::vec2 gradient(const glm::vec2& x_i, const glm::vec2& x_j) const
     {
-        auto dir = x_j - x_i + glm::vec2{1e-9f, 1e-9f};
+        auto dir = x_j - x_i;
         auto d = glm::length(dir);
 
-        return - firstDerivative(d, d*d) * (dir / d);
+        return (d != 0.0f) ? - firstDerivative(d, d*d) * (dir / d) : glm::vec2{0.0f, 0.0f};
     }
 
 private:

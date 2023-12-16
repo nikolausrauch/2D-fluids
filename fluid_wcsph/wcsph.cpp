@@ -8,7 +8,7 @@
 
 #include <glm/glm.hpp>
 
-#define PARTICLE_INIT (1024*256)
+#define PARTICLE_INIT (1024*512)
 #define RAND_0_1 (static_cast<float>(std::rand()) / static_cast<float>(RAND_MAX))
 
 
@@ -43,9 +43,9 @@ float Boundary::penetration(const glm::vec2 &pos)
 
 
 WCSPH::WCSPH()
-    : timeStep(0.0016), numPerFrame(5),
-      mass(0.006), radiusParticle(0.05), radiusKernel(2.5f*radiusParticle),
-      restDensity(1.0), eosScale(100), eosExponent(7.0), viscocityConstant(0.15f),
+    : timeStep(0.0016), numPerFrame(15),
+      mass(0.006), radiusParticle(0.05), radiusKernel(4.0f*radiusParticle),
+      restDensity(1.0), eosScale(250), eosExponent(1.0), viscocityConstant(0.15f),
       gravity(0, -9.81),
       densityKernel(radiusKernel), pressureKernel(radiusKernel), viscosityKernel(radiusKernel),
       nnSearch(PARTICLE_INIT), nnSearchBoundary(PARTICLE_INIT)
@@ -98,12 +98,13 @@ void WCSPH::boundary(const glm::vec2 &pos, const glm::vec2 &normal, const glm::v
 {
     boundaries.emplace_back(pos, normal, min, max);
 
-    auto samples = helper::randomPositions(radiusParticle / 2.0f, min, max);
+    auto samples = helper::randomPositions(radiusParticle, min, max);
     for(const auto& p : samples)
     {
         createGhostParticle(p);
     }
 
+    nnSearchBoundary.clear();
     nnSearchBoundary.fillGrid(particlesBoundary, radiusKernel);
 }
 
@@ -145,7 +146,7 @@ void WCSPH::update(float dt)
             nnSearch.updateNeighbour(std::distance(particles.data(), &p), particles, radiusKernel);
             nnSearchBoundary.updateGhostNeighbour(std::distance(particles.data(), &p), p.position, particlesBoundary, radiusKernel);
 
-            p.density = 0.0f;
+            p.density = mass * densityKernel(0, 0);
 
             /* fluid particles */
             {
@@ -190,6 +191,9 @@ void WCSPH::update(float dt)
                     /* pressure gradient */
                     p_i.force -= mass * mass * (p_i.pressure / (p_i.density*p_i.density) + p_j.pressure / (p_j.density*p_j.density))
                             * pressureKernel.gradient(p_i.position, p_j.position);
+
+                    const auto d = glm::length(p_i.position - p_j.position);
+                    if(pressureKernel.firstDerivative(d, d*d) > 0.0f) { std::cerr << "hoi" << std::endl; }
 
                     /* viscocity */
                     p_i.force += 2.0f * viscocityConstant * mass * mass / p_j.density * (p_i.velocity - p_j.velocity) *
@@ -241,11 +245,12 @@ float WCSPH::particleRadius() const
 void WCSPH::particleRadius(float r)
 {
     radiusParticle = r;
-    kernelRadius(2.5f*radiusParticle);
+    kernelRadius(4.0f*radiusParticle);
 }
 
 float WCSPH::pressure(float density)
 {
+    // [Batchelor 1967]
     float p = restDensity * eosScale / eosExponent * (std::pow(density / restDensity, eosExponent) - 1.0f);
     return (p < 0.0f) ? 0.0f : p;
 }
@@ -267,7 +272,7 @@ float WCSPH::kernelRadius()
 
 void WCSPH::autotuneMass()
 {
-    auto sampledPositions = helper::randomPositions(radiusParticle, {-2.0*radiusKernel, -2.0*radiusKernel}, {2.0*radiusKernel, 2.0*radiusKernel});
+    auto sampledPositions = helper::randomPositions(radiusParticle*2.0f, {-2.0*radiusKernel, -2.0*radiusKernel}, {2.0*radiusKernel, 2.0*radiusKernel});
 
     unsigned int count = 0;
     float densityEstimate = 0.0f;
