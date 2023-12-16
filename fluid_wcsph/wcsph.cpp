@@ -164,7 +164,7 @@ void WCSPH::update(float dt)
                 std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                 {
                     const auto d = glm::length(p.position - particlesBoundary[j].position);
-                    p.density += mass * restDensity * densityKernel(d, d*d);
+                    p.density += mass * densityKernel(d, d*d);
                 });
             }
 
