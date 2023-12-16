@@ -105,8 +105,9 @@ int main(int argc, char** argv)
                     setup_scene(sim, scene);
                 }
 
-                if(ImGui::SliderInt("solver iter", &sim.solverIteration, 0, 50)) {}
-                if(ImGui::SliderFloat("Timestep", &sim.timeStep, 0.001, 0.016, "%.6f")) {}
+                ImGui::SliderFloat("dt", &sim.timeStep, 0.001, 0.016, "%.6f");
+                ImGui::SliderInt("iter/frame", &sim.numPerFrame, 1, 32);
+                ImGui::SliderInt("solver iter", &sim.solverIteration, 0, 50);
             }
 
             ImGui::Separator();
@@ -148,7 +149,7 @@ int main(int argc, char** argv)
         /* add particles */
         if(key == GLFW_KEY_SPACE && press)
         {
-            auto sampledPositions = helper::randomPositions(sim.particleRadius(), {-0.5, 0.0}, {0.5, 1.0});
+            auto sampledPositions = helper::randomPositions(sim.particleRadius()*2.0f, {-0.5, 0.0}, {0.5, 1.0});
             for(const auto& pos : sampledPositions)
             {
                 sim.createParticle(pos);

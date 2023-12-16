@@ -28,12 +28,12 @@ Wall::Wall(const glm::vec2& pos, const glm::vec2& normal)
 }
 
 PBFSystem::PBFSystem()
-    : timeStep(0.0083),
-      solverIteration(4),
-      damping(0.0), radius(0.05), kernelRadius(2.5f*radius),
+    : timeStep(0.0082), numPerFrame(3),
+      solverIteration(5),
+      damping(0.0), radius(0.05), kernelRadius(4.0f*radius),
       restDensity(1.0),
       relaxEps(600.0), xsphConstant(0.001),
-      surfacePressure(true), kernelSubstep(0.25f), surfaceK(0.0001), surfaceExp(4),
+      surfacePressure(false), kernelSubstep(0.25f), surfaceK(0.0001), surfaceExp(4),
       densityKernel(kernelRadius), gradientKernel(kernelRadius),
       nnSearch(PARTICLE_INIT)
 {
@@ -87,15 +87,18 @@ void PBFSystem::clear()
 
 void PBFSystem::update()
 {
-    update(timeStep);
+    PerfMonitor::instance().start_frame();
+    profile_sample(total);
+
+    for(int i = 0; i < numPerFrame; i++)
+    {
+        update(timeStep);
+    }
 }
 
 void PBFSystem::update(float dt)
 {
-    PerfMonitor::instance().start_frame();
     {
-        profile_sample(total);
-
         const glm::vec2 gravity{0.0, -9.81};
 
         /* 1-4: predict particle positions */
@@ -232,7 +235,7 @@ void PBFSystem::particleRadius(float r)
 
 void PBFSystem::autotuneRestDensity()
 {
-    auto sampledPositions = helper::randomPositions(radius, {-kernelRadius, -kernelRadius}, {kernelRadius, kernelRadius});
+    auto sampledPositions = helper::randomPositions(radius*2.0f, {-2.0f*kernelRadius, -2.0f*kernelRadius}, {2.0f*kernelRadius, 2.0f*kernelRadius});
 
     unsigned int count = 0;
     float densityEstimate = 0.0f;
@@ -253,7 +256,7 @@ void PBFSystem::autotuneRestDensity()
 
 void PBFSystem::updateKernels()
 {
-    kernelRadius = 2.5f * radius;
+    kernelRadius = 4.0f * radius;
     densityKernel = kernel::std(kernelRadius);
     gradientKernel = kernel::spiky(kernelRadius);
 }

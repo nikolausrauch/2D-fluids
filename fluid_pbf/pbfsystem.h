@@ -86,6 +86,7 @@ private:
 
 public:
     float timeStep;
+    int numPerFrame;
 
     int solverIteration;
 
