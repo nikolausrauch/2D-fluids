@@ -103,14 +103,15 @@ int main(int argc, char** argv)
                 auto& perf_monitor = PerfMonitor::instance();
                 ImGui::TextColored(ImVec4(1.0, 0.4, 0.4, 1.0), "Total : %4.3f ms", perf_monitor.time("total"));
                 ImGui::TextColored(ImVec4(0.1, 0.8, 0.0, 1.0), "\tnnfill: %4.3f ms",  perf_monitor.time("nnfill"));
-                ImGui::TextColored(ImVec4(1.0, 0.5, 0.0, 1.0), "\tpred advection: %4.3f ms", perf_monitor.time("predadvection"));
-                ImGui::TextColored(ImVec4(0.5, 0.5, 1.0, 1.0), "\tsolver iter: %4.3f ms", perf_monitor.time("predcorr"));
-                ImGui::TextColored(ImVec4(0.5, 0.5, 1.0, 1.0), "\tintegrate: %4.3f ms", perf_monitor.time("integrate"));
+                ImGui::TextColored(ImVec4(1.0, 0.5, 0.0, 1.0), "\tvelecity & density & precompute: %4.3f ms", perf_monitor.time("predvel"));
+                ImGui::TextColored(ImVec4(0.5, 0.5, 1.0, 1.0), "\tdensity advection & precompute: %4.3f ms", perf_monitor.time("advection"));
+                ImGui::TextColored(ImVec4(0.5, 0.5, 1.0, 1.0), "\tpressure solver: %4.3f ms", perf_monitor.time("pressuresolve"));
+                ImGui::TextColored(ImVec4(0.5, 0.5, 1.0, 1.0), "\tpressure force & integrate: %4.3f ms", perf_monitor.time("integrate"));
             }
 
             ImGui::Separator();
 
-            ImGui::TextColored(ImVec4(0.6, 0.8, 0.6, 1.0), "WSPH: ");
+            ImGui::TextColored(ImVec4(0.6, 0.8, 0.6, 1.0), "SPH: ");
             {
                 if(ImGui::SliderFloat("mass", &sim.mass, 0.001, 10.0))
                 {

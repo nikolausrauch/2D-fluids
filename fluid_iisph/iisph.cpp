@@ -141,7 +141,7 @@ void IISPH::update(float dt)
     }
 
     {
-        profile_sample(predadvection);
+        profile_sample(predvel);
 
         #pragma omp parallel for schedule(static)
         for(auto& p_i : particles)
@@ -220,6 +220,8 @@ void IISPH::update(float dt)
         #pragma omp parallel for schedule(static)
         for(auto& p_i : particles)
         {
+            profile_sample(advection);
+
             /* initialize unknown pressure from prev. solution */
             p_i.p_i[0] = 0.5f * p_i.pressure;
 
@@ -339,9 +341,6 @@ void IISPH::update(float dt)
                 {
                     p_i.p_i[p_idx_1] = 0.0f;
                 }
-
-                // DEBUG
-                if(std::isnan(p_i.p_i[p_idx_1])) {  std::cerr << "nan" << std::endl; }
 
                 p_i.p_i[p_idx_1] = std::max(p_i.p_i[p_idx_1], 0.0f);
                 p_i.pressure = p_i.p_i[p_idx_1];
