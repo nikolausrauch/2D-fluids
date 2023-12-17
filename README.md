@@ -13,7 +13,7 @@ The goal is to provide minimalistic and straightforward implementations, emphasi
   - [x] WCSPH: Weakly Compressible SPH
   - [x] PCISPH: Predictive-Corrective Incompressible SPH
   - [x] PBF: Position Based Fluid
-  - [ ] IISPH: Implicit Incompressible SPH
+  - [x] IISPH: Implicit Incompressible SPH
   - [ ] DFSPH: Divergence-Free SPH
   - [ ] FLIP: Fluid Particle in Cell
   - [ ] Stable-Fluid: Eulerian based Fluid
