@@ -110,7 +110,7 @@ int main(int argc, char** argv)
 
             ImGui::Separator();
 
-            ImGui::TextColored(ImVec4(0.6, 0.8, 0.6, 1.0), "WSPH: ");
+            ImGui::TextColored(ImVec4(0.6, 0.8, 0.6, 1.0), "SPH: ");
             {
                 if(ImGui::SliderFloat("mass", &sim.mass, 0.001, 10.0))
                 {
@@ -147,6 +147,7 @@ int main(int argc, char** argv)
                 ImGui::SliderFloat("dt", &sim.timeStep, 0.0001, 0.016, "%.6f");
                 ImGui::SliderInt("iter/frame", &sim.numPerFrame, 1, 32);
                 ImGui::SliderInt("min solver steps", &sim.numIterations, 0, 100);
+                ImGui::SliderFloat("error threshold", &sim.errorThresh, 0.001, 0.2, "%.3f");
             }
 
             ImGui::Separator();
