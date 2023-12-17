@@ -103,6 +103,11 @@ add_subdirectory(fluid_pcisph)
 add_subdirectory(fluid_pbf)
 
 #########################################
+#       Implicit Incompressible SPH     #
+#########################################
+add_subdirectory(fluid_iisph)
+
+#########################################
 #         Fluid-Particle in Cell        #
 #########################################
 # add_subdirectory(fluid_flip)
