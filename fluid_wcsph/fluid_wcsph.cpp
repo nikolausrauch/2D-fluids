@@ -44,7 +44,7 @@ int main(int argc, char** argv)
     viewer.onDraw([&](Window& window, double dt)
     {
         /* render points */
-        viewer.mRender.pointRadius = 50 * sim.particleRadius();
+        viewer.mRender.pointRadius = 40 * sim.particleRadius();
         viewer.drawPoints(sim.particles.begin(), sim.particles.end(), [&](const auto& p, glm::vec2& coord, glm::vec4& color)
         {
             coord = p.position;

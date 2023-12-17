@@ -22,7 +22,6 @@ struct Particle
 
     glm::vec2 position[2];
     glm::vec2 velocity[2];
-    glm::vec2 predVelocity;
     glm::vec2 forceNoPress;
     glm::vec2 forcePress;
 
