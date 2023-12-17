@@ -144,8 +144,8 @@ void PCISPH::update(float dt)
         #pragma omp parallel for schedule(static)
         for(auto& p_i : particles)
         {
-            nnSearch.updateNeighbour(std::distance(particles.data(), &p_i), particles, radiusKernel);
-            nnSearchBoundary.updateGhostNeighbour(std::distance(particles.data(), &p_i), p_i.position[0], particlesBoundary, radiusKernel);
+            nnSearch.updateNeighbour(index(p_i), particles, radiusKernel);
+            nnSearchBoundary.updateGhostNeighbour(index(p_i), p_i.position[0], particlesBoundary, radiusKernel);
 
             /* gravity */
             p_i.forceNoPress = mass * gravity;
@@ -195,7 +195,7 @@ void PCISPH::update(float dt)
 
                     /* fluid particles */
                     {
-                        const auto& neighbours = nnSearch.neighbors(p, particles);
+                        const auto& neighbours = nnSearch.neighbors(index(p));
                         std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                         {
                             const auto d = glm::length(p.position[1] - particles[j].position[1]);
@@ -205,7 +205,7 @@ void PCISPH::update(float dt)
 
                     /* boundary particles */
                     {
-                        const auto& neighbours = nnSearchBoundary.neighbors(std::distance(particles.data(), &p));
+                        const auto& neighbours = nnSearchBoundary.neighbors(index(p));
                         std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                         {
                             const auto d = glm::length(p.position[1] - particlesBoundary[j].position);
@@ -235,7 +235,7 @@ void PCISPH::update(float dt)
 
                     /* fluid particles */
                     {
-                        const auto& neighbours = nnSearch.neighbors(p_i, particles);
+                        const auto& neighbours = nnSearch.neighbors(index(p_i));
                         std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                         {
                             const auto& p_j = particles[j];
@@ -246,11 +246,11 @@ void PCISPH::update(float dt)
 
                     /* boundary particles */
                     {
-                        const auto& neighbours = nnSearchBoundary.neighbors(std::distance(particles.data(), &p_i));
+                        const auto& neighbours = nnSearchBoundary.neighbors(index(p_i));
                         std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                         {
                             const auto& p_j = particlesBoundary[j];
-                            p_i.forcePress -= mass * mass * (p_i.pressure / (p_i.density*p_i.density) + p_i.pressure / (restDensity*restDensity))
+                            p_i.forcePress -= mass * mass * (p_i.pressure / (p_i.density*p_i.density))
                                     * pressureKernel.gradient(p_i.position[0], p_j.position);
                         });
                     }
@@ -375,7 +375,7 @@ void PCISPH::computeInitialDensity()
             std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
             {
                 const auto d = glm::length(p.position[0] - particlesBoundary[j].position);
-                p.density += mass * restDensity * densityKernel(d, d*d);
+                p.density += mass * densityKernel(d, d*d);
             });
         }
     }

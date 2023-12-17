@@ -1,9 +1,9 @@
 /*******************************************************************
- *  Weakly Compressible SPH
+ *  Predictive Corrective Incompressible SPH
  *
  *
  * author: Nikolaus Rauch
- * date: 13.02.2021
+ * date: 16.12.2023
  */
 
 #pragma once

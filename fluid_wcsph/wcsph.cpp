@@ -143,14 +143,14 @@ void WCSPH::update(float dt)
         #pragma omp parallel for schedule(static)
         for(auto& p : particles)
         {
-            nnSearch.updateNeighbour(std::distance(particles.data(), &p), particles, radiusKernel);
-            nnSearchBoundary.updateGhostNeighbour(std::distance(particles.data(), &p), p.position, particlesBoundary, radiusKernel);
+            nnSearch.updateNeighbour(index(p), particles, radiusKernel);
+            nnSearchBoundary.updateGhostNeighbour(index(p), p.position, particlesBoundary, radiusKernel);
 
             p.density = mass * densityKernel(0, 0);
 
             /* fluid particles */
             {
-                const auto& neighbours = nnSearch.neighbors(p, particles);
+                const auto& neighbours = nnSearch.neighbors(index(p));
                 std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                 {
                     const auto d = glm::length(p.position - particles[j].position);
@@ -160,7 +160,7 @@ void WCSPH::update(float dt)
 
             /* boundary particles */
             {
-                const auto& neighbours = nnSearchBoundary.neighbors(std::distance(particles.data(), &p));
+                const auto& neighbours = nnSearchBoundary.neighbors(index(p));
                 std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                 {
                     const auto d = glm::length(p.position - particlesBoundary[j].position);
@@ -183,7 +183,7 @@ void WCSPH::update(float dt)
 
             /* fluid particles */
             {
-                const auto& neighbours = nnSearch.neighbors(p_i, particles);
+                const auto& neighbours = nnSearch.neighbors(index(p_i));
                 std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                 {
                     const auto& p_j = particles[j];
@@ -191,9 +191,6 @@ void WCSPH::update(float dt)
                     /* pressure gradient */
                     p_i.force -= mass * mass * (p_i.pressure / (p_i.density*p_i.density) + p_j.pressure / (p_j.density*p_j.density))
                             * pressureKernel.gradient(p_i.position, p_j.position);
-
-                    const auto d = glm::length(p_i.position - p_j.position);
-                    if(pressureKernel.firstDerivative(d, d*d) > 0.0f) { std::cerr << "hoi" << std::endl; }
 
                     /* viscocity */
                     p_i.force += 2.0f * viscocityConstant * mass * mass / p_j.density * (p_i.velocity - p_j.velocity) *
@@ -204,11 +201,11 @@ void WCSPH::update(float dt)
 
             /* boundary particles */
             {
-                const auto& neighbours = nnSearchBoundary.neighbors(std::distance(particles.data(), &p_i));
+                const auto& neighbours = nnSearchBoundary.neighbors(index(p_i));
                 std::for_each(neighbours.begin(), neighbours.end(), [&](auto& j)
                 {
                     const auto& p_j = particlesBoundary[j];
-                    p_i.force -= mass * mass * (p_i.pressure / (p_i.density*p_i.density) + p_i.pressure / (restDensity*restDensity))
+                    p_i.force -= mass * mass * (p_i.pressure / (p_i.density*p_i.density))
                             * pressureKernel.gradient(p_i.position, p_j.position);
                 });
             }
