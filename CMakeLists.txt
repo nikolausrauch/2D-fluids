@@ -83,36 +83,11 @@ endif()
 add_subdirectory(viewer)
 
 #########################################
-#             Build Utility             #
+#       Fluid Simulation Library        #
 #########################################
-add_subdirectory(utility)
+add_subdirectory(fluid_sim)
 
 #########################################
-#        Weakly Compressible SPH        #
+#               Examples                #
 #########################################
-add_subdirectory(fluid_wcsph)
-
-#############################################
-#  Predictive-Corrective Incompressible SPH #
-#############################################
-add_subdirectory(fluid_pcisph)
-
-#########################################
-#         Position-based Fluids        #
-#########################################
-add_subdirectory(fluid_pbf)
-
-#########################################
-#       Implicit Incompressible SPH     #
-#########################################
-add_subdirectory(fluid_iisph)
-
-#########################################
-#         Fluid-Particle in Cell        #
-#########################################
-# add_subdirectory(fluid_flip)
-
-#########################################
-#             Eulerian Fluid            #
-#########################################
-# add_subdirectory(fluid_eulerian)
+add_subdirectory(examples)
