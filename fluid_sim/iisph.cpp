@@ -80,7 +80,7 @@ void IISPH::create(const Scene& desc)
 
 Particle& IISPH::createParticle(const glm::vec2 &pos)
 {
-    assert(particles.size() < PARTICLE_INIT);
+    assert(fluidParticles.size() < PARTICLE_INIT);
 
     fluidParticles.emplace_back(pos);
     return fluidParticles.back();
@@ -93,7 +93,7 @@ void IISPH::createParticles(const std::vector<glm::vec2>& pos)
 
 GhostParticle& IISPH::createGhostParticle(const glm::vec2& pos)
 {
-    assert(particles.size() < PARTICLE_INIT);
+    assert(boundaryParticles.size() < PARTICLE_INIT);
 
     boundaryParticles.emplace_back(pos);
     return boundaryParticles.back();

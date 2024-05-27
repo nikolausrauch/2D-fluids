@@ -25,7 +25,7 @@ set(HDR
 
 add_library( fluid_sim ${SRC} ${HDR} )
 target_link_libraries( fluid_sim PUBLIC glm_static )
-target_compile_features( fluid_sim PUBLIC cxx_std_17 )
+target_compile_features( fluid_sim PUBLIC cxx_std_20 )
 set_target_properties( fluid_sim PROPERTIES CXX_EXTENSIONS OFF )
 
 target_include_directories( fluid_sim PUBLIC

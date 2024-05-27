@@ -80,7 +80,7 @@ void PCISPH::create(const Scene& desc)
 
 Particle& PCISPH::createParticle(const glm::vec2 &pos)
 {
-    assert(particles.size() < PARTICLE_INIT);
+    assert(fluidParticles.size() < PARTICLE_INIT);
 
     fluidParticles.emplace_back(pos);
     return fluidParticles.back();
@@ -93,7 +93,7 @@ void PCISPH::createParticles(const std::vector<glm::vec2>& pos)
 
 GhostParticle& PCISPH::createGhostParticle(const glm::vec2& pos)
 {
-    assert(particles.size() < PARTICLE_INIT);
+    assert(boundaryParticles.size() < PARTICLE_INIT);
 
     boundaryParticles.emplace_back(pos);
     return boundaryParticles.back();
