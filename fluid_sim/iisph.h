@@ -4,37 +4,38 @@
 #include "sphkernel.h"
 #include "utility/hashgrid.h"
 
-struct Particle
-{
-    Particle(const glm::vec2& pos = glm::vec2());
-
-    glm::vec2 position;
-    glm::vec2 velocity[2];
-    glm::vec2 force;
-
-    float density;
-    float densityAdv;
-    float pressure;
-
-    glm::vec2 d_ii;
-    glm::vec2 sum_d_ij_p_j;
-    float a_ii;
-    float pressure_i[2];
-};
-
-struct GhostParticle
-{
-    GhostParticle(const glm::vec2& pos = glm::vec2());
-    glm::vec2 position;
-};
-
-/* member access for hashgrid (and rendering) */
-inline const glm::vec2& position(const Particle& p) { return p.position; }
-inline const glm::vec2& position(const GhostParticle& p) { return p.position; }
-
-
 struct IISPH : public Simulation
 {
+    struct Particle
+    {
+        Particle(const glm::vec2& pos = glm::vec2());
+
+        glm::vec2 position;
+        glm::vec2 velocity[2];
+        glm::vec2 force;
+
+        float density;
+        float densityAdv;
+        float pressure;
+
+        glm::vec2 d_ii;
+        glm::vec2 sum_d_ij_p_j;
+        float a_ii;
+        float pressure_i[2];
+    };
+
+    struct GhostParticle
+    {
+        GhostParticle(const glm::vec2& pos = glm::vec2());
+        glm::vec2 position;
+    };
+
+    /* member access for hashgrid (and rendering) */
+    inline static const glm::vec2& position(const Particle& p) { return p.position; }
+    inline static const glm::vec2& position(const GhostParticle& p) { return p.position; }
+
+
+public:
     IISPH();
 
     void create(const Scene& desc);

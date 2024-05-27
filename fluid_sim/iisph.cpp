@@ -10,7 +10,8 @@
 
 #define PARTICLE_INIT (1024*128)
 
-Particle::Particle(const glm::vec2 &pos)
+
+IISPH::Particle::Particle(const glm::vec2 &pos)
     : position(pos), velocity{{0.0f, 0.0f}, {0.0f, 0.0f}},
       force(0.0f),
       density(0.0f), densityAdv(0.0f), pressure(0.0f),
@@ -19,7 +20,7 @@ Particle::Particle(const glm::vec2 &pos)
 
 }
 
-GhostParticle::GhostParticle(const glm::vec2& pos)
+IISPH::GhostParticle::GhostParticle(const glm::vec2& pos)
     : position(pos)
 {
 
@@ -78,7 +79,7 @@ void IISPH::create(const Scene& desc)
     boundaryNNsearch.fillGrid(boundaryParticles, radiusKernel);
 }
 
-Particle& IISPH::createParticle(const glm::vec2 &pos)
+IISPH::Particle& IISPH::createParticle(const glm::vec2 &pos)
 {
     assert(fluidParticles.size() < PARTICLE_INIT);
 
@@ -91,7 +92,7 @@ void IISPH::createParticles(const std::vector<glm::vec2>& pos)
     fluidParticles.insert(fluidParticles.end(), pos.begin(), pos.end());
 }
 
-GhostParticle& IISPH::createGhostParticle(const glm::vec2& pos)
+IISPH::GhostParticle& IISPH::createGhostParticle(const glm::vec2& pos)
 {
     assert(boundaryParticles.size() < PARTICLE_INIT);
 

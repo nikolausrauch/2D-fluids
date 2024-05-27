@@ -4,31 +4,32 @@
 #include "sphkernel.h"
 #include "utility/hashgrid.h"
 
-struct Particle
-{
-    Particle(const glm::vec2& pos = glm::vec2());
-
-    glm::vec2 position;
-    glm::vec2 velocity;
-    glm::vec2 force;
-
-    float density;
-    float pressure;
-};
-
-struct GhostParticle
-{
-    GhostParticle(const glm::vec2& pos = glm::vec2());
-    glm::vec2 position;
-};
-
-/* member access for hashgrid (and rendering) */
-inline const glm::vec2& position(const Particle& p) { return p.position; }
-inline const glm::vec2& position(const GhostParticle& p) { return p.position; }
-
-
 struct WCSPH : public Simulation
 {
+    struct Particle
+    {
+        Particle(const glm::vec2& pos = glm::vec2());
+
+        glm::vec2 position;
+        glm::vec2 velocity;
+        glm::vec2 force;
+
+        float density;
+        float pressure;
+    };
+
+    struct GhostParticle
+    {
+        GhostParticle(const glm::vec2& pos = glm::vec2());
+        glm::vec2 position;
+    };
+
+    /* member access for hashgrid (and rendering) */
+    inline static const glm::vec2& position(const Particle& p) { return p.position; }
+    inline static const glm::vec2& position(const GhostParticle& p) { return p.position; }
+
+
+public:
     WCSPH();
 
     void create(const Scene& desc);

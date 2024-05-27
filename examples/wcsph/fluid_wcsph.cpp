@@ -9,8 +9,10 @@
 #include <cstdlib>
 
 /* for render options in drawFluidParticles */
-inline float pressure(const Particle& p) { return p.pressure; }
-inline const glm::vec2& velocity(const Particle& p) { return p.velocity; }
+inline const glm::vec2& position(const WCSPH::Particle& p) { return p.position; }
+inline const glm::vec2& position(const WCSPH::GhostParticle& p) { return p.position; }
+inline float pressure(const WCSPH::Particle& p) { return p.pressure; }
+inline const glm::vec2& velocity(const WCSPH::Particle& p) { return p.velocity; }
 
 int main(int argc, char** argv)
 {
