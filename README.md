@@ -6,7 +6,7 @@
 
 This repository contains proof-of-concept C++ implementations of different *fluid dynamics solvers* in 2D.   
 The goal is to provide minimalistic and straightforward implementations, emphasizing ease of understanding.   
-I decided to keep simulation code mostly independent (single file), which means that routines are at times duplicated (e.g. SPH density estimation, eos, boundary particles, ...).
+I decided to keep simulation code mostly independent (single file), which means that routines and data-types are at times duplicated (e.g. SPH density estimation, eos, boundary particles, ...).
 
 ## Features
 
@@ -16,9 +16,9 @@ I decided to keep simulation code mostly independent (single file), which means 
   - [x] PBF: Position Based Fluid [[Macklin 2013]](https://mmacklin.com/pbf_sig_preprint.pdf)
   - [ ] PF: Projective Fluids
   - [x] IISPH: Implicit Incompressible SPH [[Ihmsen 2013]](https://cg.informatik.uni-freiburg.de/publications/2013_TVCG_IISPH.pdf)
-  - [ ] DFSPH: Divergence-Free SPH
-  - [ ] FLIP: Fluid Particle in Cell
-  - [ ] Stable-Fluid: Eulerian based Fluid
+  - [x] DFSPH: Divergence-Free SPH [[Bender 2015]](https://animation.rwth-aachen.de/media/papers/2015-SCA-DFSPH.pdf)
+  - [ ] FLIP/PIC: Fluid-Implicit-Particle / Particle-In-Cell Blend
+  - [ ] APIC: Affine Particle-In-Cell Method
 - Utility
   - [x] 2D-Viewer with OpenGL2 and ImGui/ImPlot ([standalone repo](https://github.com/nikolausrauch/2D-viewer))
   - [x] Minimal Performance Monitoring
@@ -31,7 +31,7 @@ I decided to keep simulation code mostly independent (single file), which means 
 ## Minimal Example
 Scene setup is independent of the used simulator.
 An instance of **Scene** provides an interface to construct geometry (Box, Circle) that can either be a boundary or fluid body (currently no dynamic boundaries).   
-The simulator (**WCSPH, PCISPH, PBF, IISPH**) initializes its data (e.g. fluid and ghost particles) from the description via `void Simulation::create(const Scene&)`.
+The simulator (**WCSPH, PCISPH, PBF, IISPH, DFSPH, etc.**) initializes its data (e.g. fluid and ghost particles) from the description via `void Simulation::create(const Scene&)`.
 
 ```C++
 /* scene description */

@@ -3,6 +3,7 @@ set(SRC
         "${CMAKE_CURRENT_SOURCE_DIR}/wcsph.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/pcisph.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/iisph.cpp"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dfsph.cpp"
         "${CMAKE_CURRENT_SOURCE_DIR}/pbf.cpp"
 
         "${CMAKE_CURRENT_SOURCE_DIR}/utility/perfmonitor.cpp"
@@ -15,6 +16,7 @@ set(HDR
         "${CMAKE_CURRENT_SOURCE_DIR}/wcsph.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pcisph.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/iisph.h"
+        "${CMAKE_CURRENT_SOURCE_DIR}/dfsph.h"
         "${CMAKE_CURRENT_SOURCE_DIR}/pbf.h"
 
         "${CMAKE_CURRENT_SOURCE_DIR}/sphkernel.h"
